@@ -1,0 +1,12 @@
+{
+  "name": "git-stacked",
+  "version": "1.0.3",
+  "description": "A command to automatically rebase stacked branches in git.",
+  "main": "stacked",
+  "repository": "git@github.com:jackcdm/stacked.git",
+  "author": "Jack Murray <jack@murray.software>",
+  "license": "CC0-1.0",
+  "bin": {
+    "stacked": "./stacked"
+  }
+}
