@@ -45,22 +45,6 @@ I think git only holds a limited number of historical reflogs or only for a
 limited amount of time. This should work reliably if it is run within a few
 weeks of making the changes with a normal amount of git activity.
 
-## Bugs
-
-In a scenario where you have 3 branches, A, B and C, such that B depends on A,
-and C depends on B, there is a bug when the following happens:
-
-  1. You modify A
-  2. You run `stacked`, automatically rebasing B and C.
-  3. You then modify B.
-  4. You run `stacked`, which is supposed to rebase C. But it doesn't.
-
-I don't know why this is happening yet. For some reason, none of the commits in
-the reflog of B show up in the C branch at all. Which means there is still
-something I do not understand about reflogs. I'll try to reproduce this and fix
-it at some point, but for now I'll just leave it as it is. If this impacts you,
-feel free to make an issue on GitHub and I'll prioritize fixing it.
-
 ## Shell script
 
 ```
@@ -75,6 +59,8 @@ stacked() {
   stacked_main_branch="$(cat "$HOME/.stackedrc" 2> /dev/null || echo main)"
 
   current_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+  commit_date="$(date +%s) +0000"
 
   # For all the historical tips of this branch
   for tip in $(git rev-list --walk-reflogs "$current_branch")
@@ -92,7 +78,7 @@ stacked() {
 
           # Rebase branch onto the current branch
           # (only commits after the historical tip)
-          if ! git rebase --onto "$current_branch" "$tip" "$branch"
+          if ! GIT_COMMITTER_DATE="$commit_date" git rebase --onto "$current_branch" "$tip" "$branch"
           then
             echo
             echo "There was a conflict when rebasing one of the child branches"

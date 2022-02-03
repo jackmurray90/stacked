@@ -11,6 +11,8 @@ stacked_main_branch="$(cat "$HOME/.stackedrc" 2> /dev/null || echo main)"
 
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
+export GIT_COMMITTER_DATE="$(date +%s) +0000"
+
 # For all the historical tips of this branch
 for tip in $(git rev-list --walk-reflogs "$current_branch")
 do
