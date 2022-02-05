@@ -56,11 +56,13 @@ stacked() {
     return
   fi
 
+  local stacked_main_branch current_branch GIT_COMMITTER_DATE
+
   stacked_main_branch="$(cat "$HOME/.stackedrc" 2> /dev/null || echo main)"
 
   current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
-  commit_date="$(date +%s) +0000"
+  export GIT_COMMITTER_DATE="$(date +%s) +0000"
 
   # For all the historical tips of this branch
   for tip in $(git rev-list --walk-reflogs "$current_branch")
@@ -78,7 +80,7 @@ stacked() {
 
           # Rebase branch onto the current branch
           # (only commits after the historical tip)
-          if ! GIT_COMMITTER_DATE="$commit_date" git rebase --onto "$current_branch" "$tip" "$branch"
+          if ! git rebase --onto "$current_branch" "$tip" "$branch"
           then
             echo
             echo "There was a conflict when rebasing one of the child branches"
